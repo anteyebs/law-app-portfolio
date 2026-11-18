@@ -1,0 +1,153 @@
+openapi: 3.1.0
+info:
+  # Do not change the title, if the title changes, the import paths will be broken
+  title: Api
+  version: 0.1.0
+  description: Lawphabet API specification
+servers:
+  - url: /api
+    description: Base API path
+tags:
+  - name: health
+    description: Health operations
+  - name: words
+    description: Legal word definitions
+paths:
+  /healthz:
+    get:
+      operationId: healthCheck
+      tags: [health]
+      summary: Health check
+      description: Returns server health status
+      responses:
+        "200":
+          description: Healthy
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthStatus"
+  /word/{letter}:
+    get:
+      operationId: getWordByLetter
+      tags: [words]
+      summary: Get word entry for a letter
+      description: Returns the full word entry for a given letter (A-Z)
+      parameters:
+        - name: letter
+          in: path
+          required: true
+          schema:
+            type: string
+            minLength: 1
+            maxLength: 1
+          description: Single letter A-Z (case-insensitive)
+      responses:
+        "200":
+          description: Word entry found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/WordEntry"
+        "404":
+          description: Letter not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  /word/{letter}/all:
+    get:
+      operationId: getWordsByLetter
+      tags: [words]
+      summary: Get all word entries for a letter
+      description: Returns all word entries for a given letter (A-Z)
+      parameters:
+        - name: letter
+          in: path
+          required: true
+          schema:
+            type: string
+            minLength: 1
+            maxLength: 1
+          description: Single letter A-Z (case-insensitive)
+      responses:
+        "200":
+          description: All word entries for the letter
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/WordEntry"
+        "404":
+          description: Letter not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  /words/all:
+    get:
+      operationId: getAllWords
+      tags: [words]
+      summary: Get all word entries
+      description: Returns all word entries for the A-Z alphabet
+      responses:
+        "200":
+          description: All word entries
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/WordEntry"
+components:
+  schemas:
+    HealthStatus:
+      type: object
+      properties:
+        status:
+          type: string
+      required:
+        - status
+    WordEntry:
+      type: object
+      properties:
+        letter:
+          type: string
+          description: The letter this entry represents (A-Z)
+        word:
+          type: string
+          description: The legal word
+        commonDefinition:
+          type: string
+          description: How ordinary people understand this word
+        legaleseDefinition:
+          type: string
+          description: The legal/technical definition from Black's or Bouvier's Law Dictionary
+        etymology:
+          type: string
+          description: Word origin (Latin, Old French, Greek, etc.)
+        legalUsage:
+          type: string
+          description: Real example from a statute, contract, or court ruling
+        whyItMatters:
+          type: string
+          description: 2-3 sentences on consequences of not knowing this
+        lexQuote:
+          type: string
+          description: Short punchy sentence the avatar LEX says about this word
+      required:
+        - letter
+        - word
+        - commonDefinition
+        - legaleseDefinition
+        - etymology
+        - legalUsage
+        - whyItMatters
+        - lexQuote
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+      required:
+        - error
