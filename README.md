@@ -1,4 +1,5 @@
 # Law App — Portfolio Demo
+**Live demo:** https://law-app-portfolio--ceedini.replit.app
 
 A full-stack TypeScript web application: an A–Z reference with structured entries, built as a pnpm monorepo.
 
